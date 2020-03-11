@@ -1,0 +1,19 @@
+* Scrap and publish COVID-19 data
+
+This repository scraps COVID-19 data from Santé Publique France:
+https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde
+
+Then publishes accumulated daily data on https://data.gouv.fr:
+https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820/
+
+* Prerequisit
+
+This runs on the JVM 8 or 11.
+
+It requires =curl= and a =DATAGOUV_API_KEY= environment variable.
+
+* License
+
+2020 Bastien Guerry.
+
+This application is published under the EPL 2.0 license.
