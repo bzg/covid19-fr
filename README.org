@@ -1,10 +1,7 @@
 * Scrap and publish COVID-19 data
 
-This repository scraps COVID-19 data from Santé Publique France:
-https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde
-
-Then publishes accumulated daily data on https://data.gouv.fr:
-https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820/
+This repository scraps COVID-19 data [[https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde][from Santé Publique France]] daily
+updates then publishes accumulated data on [[https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820/][data.gouv.fr]].
 
 * Prerequisit
 
