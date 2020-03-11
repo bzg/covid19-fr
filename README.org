@@ -3,11 +3,18 @@
 This repository scraps COVID-19 data [[https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde][from Santé Publique France]] daily
 updates then publishes accumulated data on [[https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820/][data.gouv.fr]].
 
+The resulting =csv= file can be directly downloaded from [[https://static.data.gouv.fr/resources/cas-confirmes-dinfection-au-covid-19-par-region/20200311-182744/covid19.csv][data.gouv.fr]].
+
 * Prerequisit
 
-This runs on the JVM 8 or 11.
+You will need the JVM 8 or 11 and [[https://clojure.org/guides/deps_and_cli][Clojure CLI tools]].
 
-It requires =curl= and a =DATAGOUV_API_KEY= environment variable.
+: ~$ git clone https://github.com/bzg/covid19-fr.git
+: ~$ cd covid19-fr/
+: ~$ clj -m core
+
+To publish the resulting =csv= file as a resource on the [[https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820][data.gouv.fr
+dataset]], you need =curl= and a =DATAGOUV_API_KEY= environment variable.
 
 * License
 
