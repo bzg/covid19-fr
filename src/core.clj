@@ -56,11 +56,13 @@
                       :axis  {:title "Dates"}}
               :y     {:field "cases" :type "quantitative"
                       :axis  {:title "Cas confirmés"}}
-              :color {:field "region"
-                      :type  "nominal"}}
+              :color {:field  "region"
+                      :type   "nominal"
+                      :scale  {:scheme "tableau20"}
+                      :legend {:title "Régions"}}}
    :width    1200
    :height   600
-   :mark     "line"})
+   :mark     "line" :tooltip {:content "data"}})
 
 (defn vega-chart! [csv]
   (sh/sh "vl2svg" (temp-json-file (vega-spec csv))
