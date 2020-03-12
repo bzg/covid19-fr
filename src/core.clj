@@ -33,9 +33,11 @@
   (flatten
    (map (fn [row]
           (let [date (:Date row)]
-            (map (fn [[k v]]
-                   {:region (name k) :cases v :date date})
-                 row)))
+            (filter
+             seq (map (fn [[k v]]
+                        (if-not (= :Date k)
+                          {:region (name k) :cases v :date date}))
+                      row))))
         (rows->maps csv))))
 
 (defn- temp-json-file
