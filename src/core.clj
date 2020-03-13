@@ -8,7 +8,7 @@
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]
-            [clojure.data.json :as datajson]
+            [clojure.data.json :as json]
             [babashka.curl :as curl]
             [java-time :as t])
   (:gen-class))
@@ -48,7 +48,7 @@
   (let [tmp-file (java.io.File/createTempFile "vega." ".json")]
     (.deleteOnExit tmp-file)
     (with-open [file (io/writer tmp-file)]
-      (datajson/write clj-vega-spec file))
+      (json/write clj-vega-spec file))
     (.getAbsolutePath tmp-file)))
 
 (defn vega-spec [csv]
@@ -89,16 +89,18 @@
              "X-Api-Key" datagouv-api-token}})
 
 (defn upload-to-datagouv []
-  ;; Upload the csv file
-  (curl/post
-   (format datagouv-endpoint-format resource-csv)
-   (merge datagouv-api-headers
-          {:form-params {"file" (str "@" csv-file-path)}}))
-  ;; Upload the svg file
-  (curl/post
-   (format datagouv-endpoint-format resource-svg)
-   (merge datagouv-api-headers
-          {:form-params {"file" (str "@" svg-file-path)}})))
+  (let [csv-output
+        (curl/post
+         (format datagouv-endpoint-format resource-csv)
+         (merge datagouv-api-headers
+                {:form-params {"file" (str "@" csv-file-path)}}))
+        svg-output
+        (curl/post
+         (format datagouv-endpoint-format resource-svg)
+         (merge datagouv-api-headers
+                {:form-params {"file" (str "@" svg-file-path)}}))]
+    {:csv-output (:success (json/read-str csv-output :key-fn keyword))
+     :svg-output (:success (json/read-str svg-output :key-fn keyword))}))
 
 (defn get-covid19-raw-data []
   (if-let [data (try (curl/get data-url)
@@ -136,7 +138,7 @@
           (vega-chart! merged)
           (println "Wrote covid19.svg")
           (cond testing (println "Testing: skip uploading")
-                (= 0 (:exit (upload-to-datagouv)))
+                (every? true? (vals (upload-to-datagouv)))
                 (println "covid19 resources uploaded to data.gouv.fr")
                 :else
                 (println "Error while trying to upload covid19.csv"))))))
