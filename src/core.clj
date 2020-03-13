@@ -3,13 +3,13 @@
 ;; License-Filename: LICENSE
 
 (ns core
-  (:require [clj-http.lite.client :as http]
-            [hickory.core :as h]
+  (:require [hickory.core :as h]
             [hickory.select :as hs]
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]
             [clojure.data.json :as datajson]
+            [babashka.curl :as curl]
             [java-time :as t])
   (:gen-class))
 
@@ -80,26 +80,30 @@
   (sh/sh "vl2svg" (temp-json-file (vega-spec csv))
          svg-file-path))
 
+(def datagouv-endpoint-format
+  (str datagouv-api "/datasets/" dataset
+       "/resources/%s/upload/"))
+
+(def datagouv-api-headers
+  {:headers {"Accept"    "application/json"
+             "X-Api-Key" datagouv-api-token}})
+
 (defn upload-to-datagouv []
-  ;; Upload the csv
-  (sh/sh "curl"
-         "-H" "Accept:application/json"
-         "-H" (str "X-Api-Key:" datagouv-api-token)
-         "-F" (str "file=@" csv-file-path)
-         "-X" "POST" (str datagouv-api "/datasets/" dataset
-                          "/resources/" resource-csv "/upload/"))
-  ;; Upload the svg
-  (sh/sh "curl"
-         "-H" "Accept:application/json"
-         "-H" (str "X-Api-Key:" datagouv-api-token)
-         "-F" (str "file=@" svg-file-path)
-         "-X" "POST" (str datagouv-api "/datasets/" dataset
-                          "/resources/" resource-svg "/upload/")))
+  ;; Upload the csv file
+  (curl/post
+   (format datagouv-endpoint-format resource-csv)
+   (merge datagouv-api-headers
+          {:form-params {"file" (str "@" csv-file-path)}})
+   ;; Upload the svg file
+   (curl/post
+    (format datagouv-endpoint-format resource-svg)
+    (merge datagouv-api-headers
+           {:form-params {"file" (str "@" svg-file-path)}}))))
 
 (defn get-covid19-raw-data []
-  (if-let [data (try (http/get data-url {:cookie-policy :standard})
+  (if-let [data (try (curl/get data-url)
                      (catch Exception _ nil))]
-    (let [out (-> data :body h/parse h/as-hickory
+    (let [out (-> data h/parse h/as-hickory
                   (as-> d (hs/select (hs/class "content__table-inner") d))
                   first :content first :content)]
       (:content (second out)))))
@@ -117,8 +121,7 @@
 
 (defn -main []
   (let [hist   (try (with-open [reader (io/reader csv-file-path)]
-                      (doall
-                       (csv/read-csv reader)))
+                      (doall (csv/read-csv reader)))
                     (catch Exception _
                       (println "No initial covid19.csv file, creating new")))
         new    (arrange-data (get-covid19-data))
@@ -136,9 +139,6 @@
                 (= 0 (:exit (upload-to-datagouv)))
                 (println "covid19 resources uploaded to data.gouv.fr")
                 :else
-                (println "Error while trying to upload covid19.csv"))
-          (if-not testing (System/exit 0))))))
+                (println "Error while trying to upload covid19.csv"))))))
 
 ;; (-main)
-
-

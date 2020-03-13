@@ -2,11 +2,11 @@
 ;; SPDX-License-Identifier: EPL-2.0
 ;; License-Filename: LICENSE
 
-{:deps {org.clojure/clojure             {:mvn/version "1.10.1"}
-        org.martinklepsch/clj-http-lite {:mvn/version "0.4.3"}
-        hickory                         {:mvn/version "0.7.1"}
-        org.clojure/data.csv            {:mvn/version "1.0.0"}
-        clojure.java-time               {:mvn/version "0.3.2"}}
+{:deps {org.clojure/clojure  {:mvn/version "1.10.1"}
+        hickory              {:mvn/version "0.7.1"}
+        org.clojure/data.csv {:mvn/version "1.0.0"}
+        clojure.java-time    {:mvn/version "0.3.2"}
+        borkdude/babashka    {:mvn/version "0.0.75"}}
 
  :aliases {:native-image
            {:main-opts ["-m clj.native-image core"
