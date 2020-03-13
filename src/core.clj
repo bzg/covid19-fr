@@ -93,12 +93,12 @@
   (curl/post
    (format datagouv-endpoint-format resource-csv)
    (merge datagouv-api-headers
-          {:form-params {"file" (str "@" csv-file-path)}})
-   ;; Upload the svg file
-   (curl/post
-    (format datagouv-endpoint-format resource-svg)
-    (merge datagouv-api-headers
-           {:form-params {"file" (str "@" svg-file-path)}}))))
+          {:form-params {"file" (str "@" csv-file-path)}}))
+  ;; Upload the svg file
+  (curl/post
+   (format datagouv-endpoint-format resource-svg)
+   (merge datagouv-api-headers
+          {:form-params {"file" (str "@" svg-file-path)}})))
 
 (defn get-covid19-raw-data []
   (if-let [data (try (curl/get data-url)
