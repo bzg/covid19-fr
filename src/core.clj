@@ -13,6 +13,8 @@
             [java-time :as t])
   (:gen-class))
 
+(def testing false)
+
 (def data-url "https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde")
 
 ;; https://www.data.gouv.fr/fr/admin/dataset/5e689ada634f4177317e4820/
@@ -53,16 +55,26 @@
   {:title    "Cas confirmés de contamination au COVID19 (Source: Santé Publique France)"
    :data     {:values (csv-to-vega-data csv)}
    :encoding {:x     {:field "date" :type "temporal"
-                      :axis  {:title "Dates"}}
-              :y     {:field "cases" :type "quantitative"
-                      :axis  {:title "Cas confirmés"}}
-              :color {:field  "region"
+                      :axis  {:title      "Dates"
+                              :labelAngle 0}}
+              :y     {:field "region" :type "ordinal"
+                      :axis  {:title "Régions"}}
+              :size  {:field  "cases"
+                      :type   "quantitative"
+                      :legend {:title      "Cas confirmés"
+                               :clipHeight 50
+                               :padding    20}
+                      :scale  {:range [0 2000]}}
+              :color {:field  "cases"
                       :type   "nominal"
-                      :scale  {:scheme "tableau20"}
-                      :legend {:title "Régions"}}}
+                      :legend false}}
    :width    1200
    :height   600
-   :mark     "line" :tooltip {:content "data"}})
+   :mark     {:type        "circle"
+              :opacity     0.8
+              :stroke      "black"
+              :strokeWidth 1}
+   :tooltip  {:content "data"}})
 
 (defn vega-chart! [csv]
   (sh/sh "vl2svg" (temp-json-file (vega-spec csv))
@@ -112,6 +124,7 @@
         new    (arrange-data (get-covid19-data))
         merged (concat (or (not-empty (take 1 hist)) (take 1 new))
                        (distinct (concat (rest hist) (rest new))))]
+    ;; (vega-chart! (drop-last merged))
     (if (= (drop 1 (last hist)) (drop 1 (last new)))
       (println "No update available")
       (do (with-open [writer (io/writer csv-file-path)]
@@ -119,7 +132,13 @@
           (println "Wrote covid19.csv")
           (vega-chart! merged)
           (println "Wrote covid19.svg")
-          (if (= 0 (:exit (upload-to-datagouv)))
-            (println "covid19 resources uploaded to data.gouv.fr")
-            (println "Error while trying to upload covid19.csv"))
-          (System/exit 0)))))
+          (cond testing (println "Testing: skip uploading")
+                (= 0 (:exit (upload-to-datagouv)))
+                (println "covid19 resources uploaded to data.gouv.fr")
+                :else
+                (println "Error while trying to upload covid19.csv"))
+          (if-not testing (System/exit 0))))))
+
+;; (-main)
+
+
