@@ -141,6 +141,7 @@
                 (every? true? (vals (upload-to-datagouv)))
                 (println "covid19 resources uploaded to data.gouv.fr")
                 :else
-                (println "Error while trying to upload covid19.csv"))))))
+                (println "Error while trying to upload covid19.csv"))
+          (if-not testing (System/exit 0))))))
 
 ;; (-main)
