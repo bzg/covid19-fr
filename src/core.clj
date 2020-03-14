@@ -73,8 +73,8 @@
    :mark     {:type        "circle"
               :opacity     0.8
               :stroke      "black"
-              :strokeWidth 1}
-   :tooltip  {:content "data"}})
+              :strokeWidth 1
+              :tooltip     true}})
 
 (defn vega-chart! [csv]
   (sh/sh "vl2svg" (temp-json-file (vega-spec csv))
