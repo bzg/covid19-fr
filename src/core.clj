@@ -113,9 +113,12 @@
 (defn get-covid19-data []
   (filter (fn [[_ c]] (string? c))
           (map (fn [[l r]]
-                 [(first (:content l))
-                  (clojure.string/replace
-                   (first (:content r)) #" +" "")])
+                 (let [a  (first (:content l))
+                       b0 (first (:content r))
+                       b  (if (string? b0)
+                            (clojure.string/replace b0 #" +" "")
+                            0)]
+                   [a b]))
                (map :content (get-covid19-raw-data)))))
 
 (defn arrange-data [data]
