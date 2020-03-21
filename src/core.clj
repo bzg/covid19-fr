@@ -110,14 +110,17 @@
                   first :content first :content)]
       (:content (second out)))))
 
+(defn clean-up-scraped-value [s]
+  (if-not (string? s)
+    0
+    (clojure.string/replace s #" |\*" "")))
+
 (defn get-covid19-data []
   (filter (fn [[_ c]] (string? c))
           (map (fn [[l r]]
-                 (let [a  (first (:content l))
-                       b0 (first (:content r))
-                       b  (if (string? b0)
-                            (clojure.string/replace b0 #" +" "")
-                            0)]
+                 (let [a (first (:content l))
+                       b (clean-up-scraped-value
+                          (first (:content r)))]
                    [a b]))
                (map :content (get-covid19-raw-data)))))
 
