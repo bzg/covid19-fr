@@ -13,7 +13,8 @@
             [java-time :as t])
   (:gen-class))
 
-(def testing false)
+;; Leave this to true if you are not allowed to update the dataset
+(def testing true)
 
 (def data-url "https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde")
 
