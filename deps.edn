@@ -8,20 +8,24 @@
         clojure.java-time    {:mvn/version "0.3.2"}
         borkdude/babashka    {:mvn/version "0.0.75"}}
 
- :aliases {:native-image
-           {:main-opts ["-m clj.native-image core"
-                        ;; "--verbose"
-                        "--no-fallback"
-                        "--report-unsupported-elements-at-runtime"
-                        "--initialize-at-build-time"
-                        ;; Allow https
-                        "-H:EnableURLProtocols=http,https"
-                        ;; "-H:+ReportExceptionStackTraces"
-                        ;; "-H:+TraceClassInitialization"
-                        ;; Optional native image name override
-                        "-H:Name=covid19-data"]
-            :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
-            :extra-deps
-            {clj.native-image
-             {:git/url "https://github.com/taylorwood/clj.native-image.git"
-              :sha     "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}}}
+ :aliases
+ {:native-image
+  {:main-opts ["-m clj.native-image core"
+               ;; "--verbose"
+               "--no-fallback"
+               "--report-unsupported-elements-at-runtime"
+               "--initialize-at-build-time"
+               ;; Allow https
+               "-H:EnableURLProtocols=http,https"
+               ;; "-H:+ReportExceptionStackTraces"
+               ;; "-H:+TraceClassInitialization"
+               ;; Optional native image name override
+               "-H:Name=covid19-data"]
+   :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
+   :extra-deps
+   {clj.native-image
+    {:git/url "https://github.com/taylorwood/clj.native-image.git"
+     :sha     "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}
+  :jar {:extra-deps {seancorfield/depstar {:mvn/version "RELEASE"}}
+        :main-opts  ["-m" "hf.depstar.uberjar" "covid19.jar"
+                     "-C" "-m" "covid19.core"]}}}
